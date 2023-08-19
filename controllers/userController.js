@@ -187,7 +187,7 @@ export const resetPassword = catchAsyncError(async (req, res, next) => {
       $gt: Date.now(),
     },
   });
-
+  
   if (!user)
     return next(new ErrorHandler("Token is invalid or has been expired", 401));
 
@@ -216,7 +216,7 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
 
   if (itemExist) return next(new ErrorHandler("Item Already Exist", 409));
 
-  user.playlist.push({
+  user.playlist.unshift({
     course: course._id,
     poster: course.poster.url,
   });

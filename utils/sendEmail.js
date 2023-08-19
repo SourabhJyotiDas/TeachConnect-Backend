@@ -1,5 +1,7 @@
 import { createTransport } from "nodemailer";
 
+// Copied from Mailtrap < inboxes < nodejs 
+
 export const sendEmail = async (to, subject, text) => {
   const transporter = createTransport({
     host: process.env.SMTP_HOST,
@@ -16,3 +18,4 @@ export const sendEmail = async (to, subject, text) => {
     text,
   });
 };
+
