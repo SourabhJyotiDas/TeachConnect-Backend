@@ -24,8 +24,8 @@ router
   .post(isAuthenticated, authorizeAdmin, createCourse);
 router
   .route("/course/:id")
-  .get(isAuthenticated, getCourseLectures)
-  .post(isAuthenticated, authorizeAdmin,  addLecture)
+  .get(isAuthenticated, authorizeSubscribers, getCourseLectures)
+  .post(isAuthenticated, authorizeAdmin, addLecture)
   .delete(isAuthenticated, authorizeAdmin, deleteCourse);
 
 // Delete Lecture
