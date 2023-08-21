@@ -27,7 +27,7 @@ export const getAllCourses = catchAsyncError(async (req, res, next) => {
 
 export const createCourse = catchAsyncError(async (req, res, next) => {
   const { title, description, category, createdBy } = req.body;
-  
+
 
   if (!title || !description || !category || !createdBy)
     return next(new ErrorHandler("Please add all fields", 400));
@@ -37,6 +37,8 @@ export const createCourse = catchAsyncError(async (req, res, next) => {
   // const fileUri = getDataUri(file);
 
   // const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
+
+
 
   // const mycloud = await cloudinary.v2.uploader.upload(req.body.poster, {
   //   folder: "TeachConnect",
@@ -85,19 +87,20 @@ export const addLecture = catchAsyncError(async (req, res, next) => {
 
   if (!course) return next(new ErrorHandler("Course not found", 404));
 
-  const file = req.file;
-  const fileUri = getDataUri(file);
+  // const file = req.file;
+  // const fileUri = getDataUri(file);
 
-  const mycloud = await cloudinary.v2.uploader.upload(fileUri.content, {
-    resource_type: "video",
-  });
+  // const mycloud = await cloudinary.v2.uploader.upload(req.body.poster, {
+  //   folder: "TeachConnect",
+  //   resource_type: "video",
+  // });
 
   course.lectures.push({
     title,
     description,
     video: {
-      public_id: mycloud.public_id,
-      url: mycloud.secure_url,
+      public_id: "mycloud.public_id",
+      url: "mycloud.secure_url",
     },
   });
 
