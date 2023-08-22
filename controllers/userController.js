@@ -10,16 +10,16 @@ import getDataUri from "../utils/dataUri.js";
 import { Stats } from "../models/Stats.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
-  const { name, email, password, avatar } = req.body;
+  const { name, email, password } = req.body;
 
-  if (!name || !email || !password || avatar)
+  if (!name || !email || !password)
     return next(new ErrorHandler("Please enter all field", 400));
 
   let user = await User.findOne({ email });
 
   if (user) return next(new ErrorHandler("User Already Exist", 409));
 
-  const mycloud = await cloudinary.v2.uploader.upload(req.body.poster, {
+  const mycloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
     folder: "TeachConnect",
     width: 150,
     crop: "scale",

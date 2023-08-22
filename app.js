@@ -11,19 +11,18 @@ const app = express();
 
 // Using Middlewares
 app.use(express.json());
-app.use(
-  express.urlencoded({
-    extended: true,
-  })
-);
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cookieParser());
 app.use(
-  cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
+  cors()
 );
+// app.use(
+//   cors({
+//     origin: process.env.FRONTEND_URL,
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//   })
+// );
 
 // Importing & Using Routes
 import course from "./routes/courseRoutes.js";
