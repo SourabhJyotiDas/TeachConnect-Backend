@@ -10,30 +10,28 @@ import getDataUri from "../utils/dataUri.js";
 import { Stats } from "../models/Stats.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, avatar } = req.body;
 
-  if (!name || !email || !password)
+  if (!name || !email || !password || avatar)
     return next(new ErrorHandler("Please enter all field", 400));
 
   let user = await User.findOne({ email });
 
   if (user) return next(new ErrorHandler("User Already Exist", 409));
 
-  // const fileUri = getDataUri(file);
-  // const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
-  // const mycloud = await cloudinary.v2.uploader.upload(req.body.poster, {
-  //   folder: "TeachConnect",
-  //   width: 150,
-  //   crop: "scale",
-  // });
+  const mycloud = await cloudinary.v2.uploader.upload(req.body.poster, {
+    folder: "TeachConnect",
+    width: 150,
+    crop: "scale",
+  });
 
   user = await User.create({
     name,
     email,
     password,
     avatar: {
-      public_id: "mycloud.public_id",
-      url: "mycloud.secure_url",
+      public_id: mycloud.public_id,
+      url: mycloud.secure_url,
     },
   });
 
@@ -187,7 +185,7 @@ export const resetPassword = catchAsyncError(async (req, res, next) => {
       $gt: Date.now(),
     },
   });
-  
+
   if (!user)
     return next(new ErrorHandler("Token is invalid or has been expired", 401));
 
