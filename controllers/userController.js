@@ -19,20 +19,15 @@ export const register = catchAsyncError(async (req, res, next) => {
 
   if (user) return next(new ErrorHandler("User Already Exist", 409));
 
-  const mycloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
-    folder: "TeachConnect",
-    width: 150,
-    crop: "scale",
+  const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+    folder: "teachConnect",
   });
 
   user = await User.create({
     name,
     email,
     password,
-    avatar: {
-      public_id: mycloud.public_id,
-      url: mycloud.secure_url,
-    },
+    avatar: { public_id: myCloud.public_id, url: myCloud.secure_url },
   });
 
   sendToken(res, user, "Registered Successfully", 201);
