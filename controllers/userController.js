@@ -53,7 +53,7 @@ export const login = catchAsyncError(async (req, res, next) => {
 
 export const logout = catchAsyncError(async (req, res, next) => {
   const options = {
-    expires: new Date(Date.now()),
+    expires: new Date(0),
     httpOnly: true,
     secure: true,
     sameSite: "none",
@@ -63,7 +63,7 @@ export const logout = catchAsyncError(async (req, res, next) => {
     success: true,
     message: "Logged Out Successfully",
   });
- 
+
 });
 
 export const getMyProfile = catchAsyncError(async (req, res, next) => {
