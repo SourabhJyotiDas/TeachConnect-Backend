@@ -2,8 +2,10 @@ import express from "express";
 import {
   addLecture,
   createCourse,
+  createCourseReview,
   deleteCourse,
   deleteLecture,
+  deleteReview,
   getAllCourses,
   getCourseLectures,
 } from "../controllers/courseController.js";
@@ -11,6 +13,7 @@ import {
   authorizeAdmin,
   isAuthenticated,
   authorizeSubscribers,
+  isSubscribed,
 } from "../middlewares/auth.js";
 
 const router = express.Router();
@@ -30,5 +33,9 @@ router
 
 // Delete Lecture
 router.route("/lecture").delete(isAuthenticated, authorizeAdmin, deleteLecture);
+
+router.route("/review").put(isAuthenticated, isSubscribed, createCourseReview)
+
+router.route("/review").delete(isAuthenticated, isSubscribed, deleteReview)
 
 export default router;

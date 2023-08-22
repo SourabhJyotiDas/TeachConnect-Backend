@@ -24,6 +24,15 @@ export const authorizeSubscribers = (req, res, next) => {
   next();
 };
 
+export const isSubscribed = (req, res, next) => {
+  if (req.user.subscription.status !== "active")
+    return next(
+      new ErrorHandler(`Only Subscribers can acces this resource`, 403)
+    );
+
+  next();
+};
+
 export const authorizeAdmin = (req, res, next) => {
   if (req.user.role !== "admin")
     return next(

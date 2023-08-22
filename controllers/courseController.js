@@ -1,5 +1,6 @@
 import { catchAsyncError } from "../middlewares/catchAsyncError.js";
 import { Course } from "../models/Course.js";
+import { User } from "../models/User.js";
 import getDataUri from "../utils/dataUri.js";
 import ErrorHandler from "../utils/errorHandler.js";
 import cloudinary from "cloudinary";
@@ -180,3 +181,98 @@ Course.watch().on("change", async () => {
 
   await stats[0].save();
 });
+
+
+////////////////////////////////////////////////////////////////
+
+
+export const createCourseReview = async (req, res, next) => {
+  const { rating, comment, courseId } = req.body;
+  const user = await User.findById(req.user._id);
+
+  const review = {
+    user,
+    rating: Number(rating),
+    comment,
+  };
+
+  const course = await Course.findById(courseId);
+
+  if (!course) return next(new ErrorHandler("Course not found", 404));
+
+
+  const isReviewed = course.reviews.find(
+    (element) => element.user.toString() === req.user._id.toString()
+  );
+
+  if (isReviewed) {
+    course.reviews.forEach((rev) => {
+      if (rev.user.toString() === req.user._id.toString())
+        (rev.rating = rating), (rev.comment = comment);
+    });
+  } else {
+    course.reviews.push(review);
+    course.numOfReviews = course.reviews.length;
+  }
+
+  let avg = 0;
+
+  course.reviews.forEach((rev) => {
+    avg += rev.rating;
+  });
+
+
+  course.ratings = avg / course.reviews.length;
+
+  await course.save();
+
+  res.status(200).json({
+    success: true,
+  });
+};
+
+
+// Delete Review
+export const deleteReview = async (req, res, next) => {
+  const course = await Course.findById(req.query.courseId);
+
+  if (!course) return next(new ErrorHandler("Course not found", 404));
+
+  const reviews = course.reviews.filter(
+    (rev) => rev._id.toString() !== req.query.id.toString()
+  );
+
+  let avg = 0;
+
+  reviews.forEach((rev) => {
+    avg += rev.rating;
+  });
+
+  let ratings = 0;
+
+  if (reviews.length === 0) {
+    ratings = 0;
+  } else {
+    ratings = avg / reviews.length;
+  }
+
+  const numOfReviews = reviews.length;
+
+  await course.findByIdAndUpdate(
+    req.query.productId,
+    {
+      reviews,
+      ratings,
+      numOfReviews,
+    },
+    {
+      new: true,
+      runValidators: true,
+      useFindAndModify: false,
+    }
+  );
+
+  res.status(200).json({
+    success: true,
+  });
+};
