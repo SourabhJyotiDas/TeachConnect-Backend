@@ -19,7 +19,7 @@ export const register = catchAsyncError(async (req, res, next) => {
 
   if (user) return next(new ErrorHandler("User Already Exist", 409));
 
-  const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+  const myCloud = await cloudinary.v2.uploader.upload(req.body.avatar, {
     folder: "teachConnect",
   });
 
