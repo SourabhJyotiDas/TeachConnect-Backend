@@ -53,13 +53,13 @@ export const login = catchAsyncError(async (req, res, next) => {
 
 export const logout = catchAsyncError(async (req, res, next) => {
   const options = {
-    expires: new Date(0), // Set to a past date to immediately expire the cookie
+    expires: new Date(Date.now()),
     httpOnly: true,
     secure: true,
     sameSite: "none",
   };
 
-  res.status(200).cookie("token", "keal", options).json({
+  res.status(200).cookie("token", null, options).json({
     success: true,
     message: "Logged Out Successfully",
   });
