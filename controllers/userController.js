@@ -53,7 +53,7 @@ export const login = catchAsyncError(async (req, res, next) => {
 
 export const logout = catchAsyncError(async (req, res, next) => {
   const options = {
-    expires: new Date(Date.now()),
+    expires: new Date(0), // Set to a past date to immediately expire the cookie
     httpOnly: true,
     secure: true,
     sameSite: "none",
