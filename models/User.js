@@ -51,6 +51,7 @@ const schema = new mongoose.Schema({
         ref: "Course",
       },
       poster: String,
+      name: String,
     },
   ],
 

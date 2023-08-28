@@ -27,25 +27,14 @@ export const getAllCourses = catchAsyncError(async (req, res, next) => {
 });
 
 export const createCourse = catchAsyncError(async (req, res, next) => {
-  const { title, description, category, createdBy } = req.body;
-
+  const { title, description, category, createdBy, image } = req.body;
 
   if (!title || !description || !category || !createdBy)
     return next(new ErrorHandler("Please add all fields", 400));
 
-  // const file = req.file;
-
-  // const fileUri = getDataUri(file);
-
-  // const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
-
-
-
-  // const mycloud = await cloudinary.v2.uploader.upload(req.body.poster, {
-  //   folder: "TeachConnect",
-  //   width: 150,
-  //   crop: "scale",
-  // });
+  const mycloud = await cloudinary.v2.uploader.upload(image, {
+    folder: "TeachConnect"
+  });
 
   await Course.create({
     title,
@@ -53,8 +42,8 @@ export const createCourse = catchAsyncError(async (req, res, next) => {
     category,
     createdBy,
     poster: {
-      public_id: "mycloud.public_id",
-      url: "mycloud.secure_url",
+      public_id: mycloud.public_id,
+      url: mycloud.secure_url,
     },
   });
 
@@ -82,26 +71,22 @@ export const getCourseLectures = catchAsyncError(async (req, res, next) => {
 // Max video size 100mb
 export const addLecture = catchAsyncError(async (req, res, next) => {
   const { id } = req.params;
-  const { title, description } = req.body;
+  const { title, description, video } = req.body;
 
   const course = await Course.findById(id);
 
   if (!course) return next(new ErrorHandler("Course not found", 404));
 
-  // const file = req.file;
-  // const fileUri = getDataUri(file);
-
-  // const mycloud = await cloudinary.v2.uploader.upload(req.body.poster, {
-  //   folder: "TeachConnect",
-  //   resource_type: "video",
-  // });
+  const myCloud = await cloudinary.v2.uploader.upload(video, {
+    resource_type: "video",
+  });
 
   course.lectures.push({
     title,
     description,
     video: {
-      public_id: "mycloud.public_id",
-      url: "mycloud.secure_url",
+      public_id: myCloud.public_id,
+      url: myCloud.secure_url,
     },
   });
 
@@ -166,21 +151,21 @@ export const deleteLecture = catchAsyncError(async (req, res, next) => {
   });
 });
 
-Course.watch().on("change", async () => {
-  const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+// Course.watch().on("change", async () => {
+//   const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
 
-  const courses = await Course.find({});
+//   const courses = await Course.find({});
 
-  let totalViews = 0;
+//   let totalViews = 0;
 
-  for (let i = 0; i < courses.length; i++) {
-    totalViews += courses[i].views;
-  }
-  stats[0].views = totalViews;
-  stats[0].createdAt = new Date(Date.now());
+//   for (let i = 0; i < courses.length; i++) {
+//     totalViews += courses[i].views;
+//   }
+//   stats[0].views = totalViews;
+//   stats[0].createdAt = new Date(Date.now());
 
-  await stats[0].save();
-});
+//   await stats[0].save();
+// });
 
 
 ////////////////////////////////////////////////////////////////

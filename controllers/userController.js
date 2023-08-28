@@ -6,14 +6,12 @@ import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
 import { Course } from "../models/Course.js";
 import cloudinary from "cloudinary";
-import getDataUri from "../utils/dataUri.js";
 import { Stats } from "../models/Stats.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
-
   if (!name || !email || !password)
-    return next(new ErrorHandler("Please enter all field", 400));
+    return next(new ErrorHandler("Please enter name ", 400));
 
   let user = await User.findOne({ email });
 
@@ -56,8 +54,6 @@ export const logout = catchAsyncError(async (req, res, next) => {
   const options = {
     expires: new Date(Date.now()),
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
   };
 
   res.status(200).cookie("token", null, options).json({
@@ -105,15 +101,15 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
 
   if (name) user.name = name;
   if (email) user.email = email;
-  // if (avatar) {
-  //   await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+  if (avatar) {
+    await cloudinary.v2.uploader.destroy(user.avatar.public_id);
 
-  //   const myCloud = await cloudinary.v2.uploader.upload(avatar, {
-  //     folder: "FightClub-avatars",
-  //   });
-  //   user.avatar.public_id = myCloud.public_id;
-  //   user.avatar.url = myCloud.secure_url;
-  // }
+    const myCloud = await cloudinary.v2.uploader.upload(avatar, {
+      folder: "teachConnect",
+    });
+    user.avatar.public_id = myCloud.public_id;
+    user.avatar.url = myCloud.secure_url;
+  }
 
   await user.save();
 
@@ -122,29 +118,6 @@ export const updateProfile = catchAsyncError(async (req, res, next) => {
     message: "Profile Updated Successfully",
   });
 });
-
-// export const updateprofilepicture = catchAsyncError(async (req, res, next) => {
-//   const file = req.file;
-
-//   const user = await User.findById(req.user._id);
-
-//   const fileUri = getDataUri(file);
-//   const mycloud = await cloudinary.v2.uploader.upload(fileUri.content);
-
-//   await cloudinary.v2.uploader.destroy(user.avatar.public_id);
-
-//   user.avatar = {
-//     public_id: mycloud.public_id,
-//     url: mycloud.secure_url,
-//   };
-
-//   await user.save();
-
-//   res.status(200).json({
-//     success: true,
-//     message: "Profile Picture Updated Successfully",
-//   });
-// });
 
 export const forgetPassword = catchAsyncError(async (req, res, next) => {
   const { email } = req.body;
@@ -216,6 +189,7 @@ export const addToPlaylist = catchAsyncError(async (req, res, next) => {
   user.playlist.unshift({
     course: course._id,
     poster: course.poster.url,
+    name: course.title
   });
 
   await user.save();
@@ -307,13 +281,13 @@ export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
     });
 });
 
-User.watch().on("change", async () => {
-  const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
+// User.watch().on("change", async () => {
+//   const stats = await Stats.find({}).sort({ createdAt: "desc" }).limit(1);
 
-  const subscription = await User.find({ "subscription.status": "active" });
-  stats[0].users = await User.countDocuments();
-  stats[0].subscription = subscription.length;
-  stats[0].createdAt = new Date(Date.now());
+//   const subscription = await User.find({ "subscription.status": "active" });
+//   stats[0].users = await User.countDocuments();
+//   stats[0].subscription = subscription.length;
+//   stats[0].createdAt = new Date(Date.now());
 
-  await stats[0].save();
-});
+//   await stats[0].save();
+// });
