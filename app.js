@@ -31,14 +31,14 @@ import payment from "./routes/paymentRoutes.js";
 import other from "./routes/otherRoutes.js";
 
 
-import path from "path";
-const __dirname = path.resolve();
+// import path from "path";
+// const __dirname = path.resolve();
 
-app.use(express.static(path.join(__dirname, "./client/build")))    // deploy only
+// app.use(express.static(path.join(__dirname, "./client/build")))    // deploy only
 
-app.get('/', async (req, res) => {
-   res.sendFile(path.join(__dirname, './client/build/index.html'));
-});
+// app.get('/', async (req, res) => {
+//    res.sendFile(path.join(__dirname, './client/build/index.html'));
+// });
 
 app.use("/api/v1", course);
 app.use("/api/v1", user);
