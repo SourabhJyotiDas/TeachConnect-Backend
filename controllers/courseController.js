@@ -56,7 +56,7 @@ export const createCourse = catchAsyncError(async (req, res, next) => {
 export const getCourseLectures = catchAsyncError(async (req, res, next) => {
   const course = await Course.findById(req.params.id);
 
-  if (!course) return next(new ErrorHandler("Course not found", 404));
+  if (!course) return next(new ErrorHandler("Course not found or maybe Admin deleted this course", 404));
 
   course.views += 1;
 

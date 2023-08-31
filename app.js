@@ -10,19 +10,18 @@ config({
 const app = express();
 
 // Using Middlewares
-
 app.use(cors())
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use(
-  cors({
-    origin: "*",
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  })
-);
+// app.use(
+//   cors({
+//     origin: "*",
+//     credentials: true,
+//     methods: ["GET", "POST", "PUT", "DELETE"],
+//   })
+// );
 
 
 // Importing & Using Routes
@@ -32,11 +31,14 @@ import payment from "./routes/paymentRoutes.js";
 import other from "./routes/otherRoutes.js";
 
 
-app.get("/", (req, res) =>
-  res.send(
-    `<h1>Site is Working to work with frontend.</h1>`
-  )
-);
+import path from "path";
+const __dirname = path.resolve();
+
+app.use(express.static(path.join(__dirname, "./client/build")))    // deploy only
+
+app.get('/', async (req, res) => {
+   res.sendFile(path.join(__dirname, './client/build/index.html'));
+});
 
 app.use("/api/v1", course);
 app.use("/api/v1", user);
