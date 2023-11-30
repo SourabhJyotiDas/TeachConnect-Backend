@@ -6,7 +6,6 @@ import { sendEmail } from "../utils/sendEmail.js";
 import crypto from "crypto";
 import { Course } from "../models/Course.js";
 import cloudinary from "cloudinary";
-import { Stats } from "../models/Stats.js";
 
 export const register = catchAsyncError(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -51,9 +50,12 @@ export const login = catchAsyncError(async (req, res, next) => {
 
 
 export const logout = catchAsyncError(async (req, res, next) => {
+
   const options = {
     expires: new Date(Date.now()),
     httpOnly: true,
+    secure: true, // Set this to true when using SameSite=None
+    sameSite: "none",
   };
 
   res.status(200).cookie("token", null, options).json({
@@ -271,12 +273,15 @@ export const deleteMyProfile = catchAsyncError(async (req, res, next) => {
   res
     .status(200)
     .cookie("token", null, {
-      expires: new Date(Date.now()),
-    })
-    .json({
-      success: true,
-      message: "User Deleted Successfully",
-    });
+        expires: new Date(Date.now()),
+        httpOnly: true,
+        secure: true, // Set this to true when using SameSite=None
+        sameSite: "none",
+      })
+          .json({
+            success: true,
+            message: "User Deleted Successfully",
+          });
 });
 
 // User.watch().on("change", async () => {
